@@ -1,4 +1,108 @@
-
-<h1>myFlix</h>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<h1>myFlix</h1>
+<body>
 <p>To build serverside component of a movies application. It will provide users with access to information about different movies, directors, and genres. Users will be able to sign up, update personal information and creat a list of their favorite movies</p>
+
+<table>
+    <thead>
+      <tr>
+        <th>Business Logic</th>
+        <th>URL</th>
+        <th>HTTP Method</th>
+        <th>Query Parameters</th>
+        <th>Request Body Data Format</th>
+        <th>Response Body Data Format</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>Return a list of ALL movies to the user</td>
+        <td>/movies</td>
+        <td>GET</td>
+        <th>None</th>
+        <td>None</td>
+        <td>A JSON object of all movies</td>
+      </tr>
+
+      <tr>
+        <td>Return data (description, genre, director, image URL, whether its featured or not) about a single movie by title to the user</td>
+        <td>/movies/:title</td>
+        <td>GET</td>
+        <th>:title</th>
+        <td>None</td>
+        <td>A JSON object of movie description based on title</td>
+      </tr>
+
+      <tr>
+        <td>Return data about a genre (description)</td>
+        <td>/movies/:genre/:genreName</td>
+        <td>GET</td>
+        <th>:genreName</th>
+        <td>None</td>
+        <td>A JSON object a the description of a specific genre</td>
+      </tr>
+
+      <tr>
+        <td>Return data about a director (bio, birth year, death year) by name</td>
+        <td>/movies/director/:directorName</td>
+        <td>GET</td>
+        <th>:directorName</th>
+        <td>None</td>
+        <td>A JSON object of the description of director</td>
+      </tr>
+
+      <tr>
+        <td>Allow new users to register</td>
+        <td>/users</td>
+        <td>Post</td>
+        <th>None</th>
+        <td>A JSON object of user information including id, name and favorite Movies</td>
+        <td>A JSON object of user information including id, name nad favorite Movies</td>
+      </tr>
+
+      <tr>
+        <td>Allow users to update their user info</td>
+        <td>/users/:id</td>
+        <td>PUT</td>
+        <th>:id</th>
+        <td>A JSON object of updated user information</td>
+        <td>A JSON object of of the users complete information</td>
+      </tr>
+
+      <tr>
+        <td>Allow users to add a movie to their list of favorites (showing only a text that a movie has been added—more on this later)</td>
+        <td>/users/:id/:movieTitle</td>
+        <td>POST</td>
+        <th>:id, :movieTitle</th>
+        <td>None</td>
+        <td>A text confirming the movie has been added to the users movies</td>
+      </tr>
+
+      <tr>
+        <td>Allow users to remove a movie from their list of favorites (showing only a text that a movie has been removed—more on this later)</td>
+        <td>/users/:id/:movieTitle</td>
+        <td>DELETE</td>
+        <th>:id, :movieTitle</th>
+        <td>None</td>
+        <td>A text confirming the movie has been removed from user's favorites</td>
+      </tr>
+
+      <tr>
+        <td>Allow existing users to deregister (showing only a text that a user email has been removed—more on this later).</td>
+        <td>/users/:id</td>
+        <td>DELETE</td>
+        <th>:id</th>
+        <td>None</td>
+        <td>A text confirming the user has been removed</td>
+      </tr>
+    </tbody>
+  </table>
+  </body>
+</html>

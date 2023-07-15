@@ -2,16 +2,43 @@
 const express = require('express');
 const morgan= require('morgan');
 const app = express();
+const uuid = require('uuid');
 
-const bodyParser = require('body-parser'),
+ bodyParser = require('body-parser'),
  methodOverride = require('method-override');
 
-app.use(morgan('common'));
 
-let topMovies = [
+app.use(morgan('common'));
+app.use(bodyParser.json());
+
+let users = [
     {
-        title: 'Bridesmaids',
-        summary: 'Competition between the maid of honor and a bridesmaid, over   who is the brides best friend, threatens to upend the life of an out-of-work pastry chef.'
+        'id': 1,
+        'name': 'Kim',
+        'favoriteMovies': ['Mission Impossible']
+    },
+    {
+        'id': 2,
+        'name' : 'Bob',
+        'favoriteMovies': []
+    }
+
+];
+
+let movies = [
+    {
+        'title': 'Bridesmaids',
+        'summary': 'Competition between the maid of honor and a bridesmaid, over   who is the brides best friend, threatens to upend the life of an out-of-work pastry chef.',
+        'genre': {
+            'name': 'Comedy',
+            'description': 'A category of film which emphasizes on humor. These films are designed to make the audience laugh in amusement. Films in this style traditionally have a happy ending (dark comedy being an exception to this rule).',
+            },
+        'director': {
+            'name': 'Paul Feig',
+            'bio':' is an American film director, producer, screenwriter, actor, and comedian. He is known for directing films starring frequent collaborator Melissa McCarthy, including Bridesmaids (2011), The Heat (2013), Spy (2015), and Ghostbusters (2016). He also directed the black comedy mystery film A Simple Favor (2018) and the romantic comedy film Last Christmas (2019).',
+            'birth': 1962.0
+        },
+        'imageURL': 'https://upload.wikimedia.org/wikipedia/en/d/df/BridesmaidsPoster.jpg'
     },
     {
         title: 'Silver Linings Playbook',
@@ -52,8 +79,52 @@ let topMovies = [
 
 ]
 
+app.post('/users', (req, res) => {
+    const newUser= req.body;
+
+    if(newUser.name){
+        newUser.id= uuid.v4();
+        users.push(newUser);
+        res.status(201).json(newUser);
+    } else {
+        res.status(400).send('users need names.');
+    }
+});
+
+app.put('/users/:id', (req, res) => {
+    const {id} = req.params;
+    const updatedUser = req.body;
+
+    let user = users.find(user => user.id==id);
+
+    if(user){
+        user.name= updatedUser.name;
+        res.status(200).json(user);
+    } else {
+        res.status(400).send('no such user.');
+    }
+});
+
+app.post('/users/:id/:movieTitle', (req, res) => {
+    const {id, movieTitle} = req.params;
+    let user = users.find(user => user.id == id);
+
+    if(user){
+        user.favoriteMovies.push(movieTitle);
+        res.status(200).send(movieTitle + ' has been added to user ' + id + 's favorite movies');
+    } else {
+        res.status(400).send('no such user');
+    }
+});
+
+
+
 app.get('/movies', (req, res) => {
-    res.json(topMovies);
+    res.json(movies);
+});
+
+app.get('/users', (req, res) => {
+    res.json(users);
 });
 
 app.get('/', (req, res) => {
@@ -71,6 +142,70 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
   });
 
+app.get('/movies', (req, res) => {
+    res.status(200).json(movies);
+});
+
+app.get('/movies/:title', (req, res) => {
+    const {title} = req.params;
+    const movie = movies.find(movie => movie.title === title);
+
+    if (movie) {
+        res.status(200).json(movie);
+    } else{ 
+        res.status(400).send('no such movie.');
+    }
+});
+
+app.get('/movies/genre/:genreName', (req, res) => {
+    const {genreName} = req.params;
+    const genre = movies.find(movie => movie.genre.name === genreName).genre;
+
+    if(genre){
+        res.status(200).json(genre);
+    } else {
+        res.status(400).send('no such genre.');
+    }
+});
+
+app.get('/movies/director/:directorName', (req, res) => {
+    const {directorName} = req.params;
+    const Director = movies.find(movie => movie.director.name === directorName).director;
+
+    if(Director){
+        res.status(200).json(Director);
+    } else{
+        res.status(400).send('no such director');
+    }
+});
+
+app.delete('/users/:id/:movieTitle', (req, res) => {
+   
+    const {id, movieTitle} = req.params;
+    let user = users.find(users => users.id == id);
+    
+    if(user){
+        user.favoriteMovies = user.favoriteMovies.filter(title => title !== movieTitle);
+        res.status(200).json(movieTitle + ' has been removed from user id ' + id);
+    } else {
+        res.status(400).send('no such user.')
+    }
+});
+
+app.delete('/users/:id', (req, res) => {
+    const {id} = req.params;
+    let user = users.find(users => users.id == id);
+
+    if(user){
+        
+        users = users.filter(users => users.id !== Number(id));
+        res.status(200).json('user id ' + id + ' has been removed from users.');
+    } else {
+        res.status(400).send('no such user.');
+    }
+});
+
 app.listen(8080, () => {
     console.log('Your app is listening on port 8080.');
   });
+
