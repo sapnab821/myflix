@@ -63,8 +63,23 @@
         <td>/users</td>
         <td>Post</td>
         <th>None</th>
-        <td>A JSON object of user information including id, name and favorite Movies</td>
-        <td>A JSON object of user information including id, name nad favorite Movies</td>
+        <td>A JSON object of user information ex.
+          {
+            "Username": "cloud45",
+            "Password": "Mountain34",
+            "Email": "gems29@gmail.com",
+            "Birthday": "1989-03-04"
+          }
+        </td>
+        <td>A JSON object of user information ex.
+          {
+            "_id": "64b947c90f28f0ee8a2fab7e",
+            "Username": "cloud45",
+            "Password": "Mountain34",
+            "Email": "gems29@gmail.com",
+            "Birthday": "1989-03-04T00:00:00.000Z"
+        }
+        </td>
       </tr>
 
       <tr>
@@ -72,8 +87,20 @@
         <td>/users/:id</td>
         <td>PUT</td>
         <th>:id</th>
-        <td>A JSON object of updated user information</td>
-        <td>A JSON object of of the users complete information</td>
+        <td>A JSON object of updated user information ex.
+          { 
+            "Password": "po54nd"
+          }
+        </td>
+        <td>A JSON object of of the users complete information ex.
+          {
+            "_id": "64b9429ee4e96a4a8115647c",
+            "Username": "Sarah98",
+            "Password": "po54nd",
+            "Email": "sarahv@yahoo.com",
+            "Birthday": "1982-01-25T00:00:00.000Z"
+        },
+        </td>
       </tr>
 
       <tr>
@@ -82,7 +109,19 @@
         <td>POST</td>
         <th>:id, :movieTitle</th>
         <td>None</td>
-        <td>A text confirming the movie has been added to the users movies</td>
+        <td>JSON text of all data on user including update movies list ex.
+          {
+            "_id": "64c11d98392cde19afcee2e9",
+            "Username": "Billy1",
+            "Password": "vody",
+            "Email": "sam@gmail.com",
+            "Birthday": "2001-09-30T00:00:00.000Z",
+            "FavoriteMovies": [
+                "64b83ab4d07cb110a4b60d2b"
+            ],
+            "__v": 0
+        }
+        </td>
       </tr>
 
       <tr>
