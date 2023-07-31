@@ -5,6 +5,8 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Models = require('./models');
 
+const { check, validationResult } = require('express-validator');
+
 const app = express(),
  Movies = Models.Movie,
  Users = Models.User;
@@ -19,13 +21,28 @@ app.use(morgan('common'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const cors = require('cors');
+app.use(cors());
+
 let auth = require('./auth')(app);
 
 const passport = require('passport');
 require('/Users/sapnabolikal/movie_api/passport');
 
 // create new user
-app.post('/users', async (req, res) => {
+app.post('/users', 
+check('Username', 'Username is required').isLength({min: 5}),
+check('Username', 'Username just be less than or equal to 12').isLength({max: 12}),
+check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+check('Password', 'Password is required').not().isEmpty(),
+check('Email', 'Email does not appear to be valid').isEmail(), async (req, res) => {
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);
     await Users.findOne({Username: req.body.Username})
     .then((user) => {
         if(user) {
@@ -34,7 +51,7 @@ app.post('/users', async (req, res) => {
             Users 
                 .create({
                     Username: req.body.Username,
-                    Password: req.body.Password,
+                    Password: hashedPassword,
                     Email: req.body.Email,
                     Birthday: req.body.Birthday,
                     FavoriteMovies: req.body.FavoriteMovies
@@ -93,7 +110,7 @@ app.get('/movies/:Title', passport.authenticate('jwt', {session:false}), async (
 app.get('/movies/genre/:Name', passport.authenticate('jwt', {session:false}), async (req, res) => {
     await Movies.findOne({'Genre.Name': req.params.Name})
     .then((movie) => {
-        res.status(200).json(movie);
+        res.status(200).json(movie.Genre);
     })
     .catch((err) => {
         console.error(err);
@@ -105,7 +122,7 @@ app.get('/movies/genre/:Name', passport.authenticate('jwt', {session:false}), as
 app.get('/movies/director/:Name', passport.authenticate('jwt', {session:false}), async (req, res)=> {
     await Movies.findOne({'Director.Name': req.params.Name})
     .then((movie) => {
-        res.status(200).json(movie)
+        res.status(200).json(movie.Director)
     })
     .catch((err) => {
         console.error(err);
@@ -114,8 +131,22 @@ app.get('/movies/director/:Name', passport.authenticate('jwt', {session:false}),
 })
 
 //update user information
-app.put('/users/:Username', passport.authenticate('jwt', {session:false}), async (req, res) => {
-   
+app.put('/users/:Username', 
+check('Username', 'Username is required').isLength({min: 5}),
+check('Username', 'Username just be less than or equal to 12').isLength({max: 12}),
+check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+check('Password', 'Password is required').not().isEmpty(),
+check('Email', 'Email does not appear to be valid').isEmail(),
+passport.authenticate('jwt', {session:false}), async (req, res) => {
+    
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);
+
     if(req.user.Username !== req.params.Username){
         return res.status(400).send('Permission denied');
     }
@@ -123,7 +154,7 @@ app.put('/users/:Username', passport.authenticate('jwt', {session:false}), async
         {
             $set: {
                 Username: req.body.Username,
-                Password: req.body.Password,
+                Password: hashedPassword,
                 Email: req.body.Email,
                 Birthday: req.body.Birthday
             },
@@ -185,6 +216,7 @@ app.delete('/users/:Username', passport.authenticate('jwt', {session:false}), as
 
 app.use(express.static('public'));
 
-app.listen(8080, () => {
-    console.log('Your app is listening on port 8080.');
-  });
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
+});
