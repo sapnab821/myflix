@@ -29,7 +29,7 @@ app.use(cors());
 let auth = require('./auth')(app);
 
 const passport = require('passport');
-require('/Users/sapnabolikal/movie_api/passport');
+require('./passport');
 
 // create new user
 app.post('/users', 
