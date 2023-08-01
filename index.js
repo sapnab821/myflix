@@ -31,6 +31,10 @@ let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
+app.get('/', (req, res) => {
+    res.send('Welcome to my movie app.');
+  });
+
 // create new user
 app.post('/users', 
 check('Username', 'Username is required').isLength({min: 5}),
