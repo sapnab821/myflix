@@ -195,7 +195,9 @@ app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', {ses
     await Users.findOneAndUpdate({Username: req.params.Username},
         {$pull: {FavoriteMovies: req.params.MovieID}})
     .then((updatedUser) => {
-        res.status(200).send(req.params.MovieID + ' was removed');
+        
+        return res.json(updatedUser);
+        
     })
     .catch((err) => {
         console.error(err);
